@@ -1,0 +1,168 @@
+/*
+var builder = WebApplication.CreateBuilder(args);
+
+var app = builder.Build();
+
+app.MapGet("/", () =>
+    "Hello from TYBScIT DevOps Demo!");
+
+app.MapGet("/student", () =>
+    "This application was built using C#, Git, Jenkins and Docker.");
+
+app.Run();
+
+
+
+
+
+
+
+
+git init
+
+
+git status
+
+Create a .gitignore file:
+bin/
+obj/
+.vs/
+*.user
+
+Then:
+git add .
+git commit -m "Initial DevOps application"
+
+Students can create a repository on GitHub, for example:
+DevOpsDemo
+
+Then connect their local project:
+git remote add origin <YOUR-REPOSITORY-URL>
+
+Push:
+git branch -M main
+git push -u origin main
+
+Demonstration Point
+Show students:
+git log
+
+
+
+Create a file named:
+Dockerfile
+
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+WORKDIR /src
+
+COPY . .
+
+RUN dotnet restore
+
+RUN dotnet publish -c Release -o /app/publish
+
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+EXPOSE 8080
+
+ENV ASPNETCORE_URLS=http://+:8080
+
+ENTRYPOINT ["dotnet", "DevOpsDemo.dll"]
+
+
+docker build -t devops-demo .
+
+docker images
+
+docker run -d -p 8080:8080 --name devops-demo-container devops-demo
+
+Check:
+docker ps
+
+Open:
+http://localhost:8080
+
+Expected:
+Hello from TYBScIT DevOps Demo!
+
+
+Jenkinsfile
+
+Use:
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'dotnet restore'
+                sh 'dotnet build --configuration Release'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'dotnet test --configuration Release'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t devops-demo:latest .'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'docker rm -f devops-demo-container || true'
+                sh 'docker run -d -p 8080:8080 --name devops-demo-container devops-demo:latest'
+            }
+        }
+    }
+}
+
+Open Jenkins in the browser.
+For example:
+http://localhost:8080
+
+Create a new Jenkins job:
+
+Set:
+Branch: */main
+Script Path: Jenkinsfile
+
+Save the job.
+
+
+change:
+app.MapGet("/", () =>
+    "Hello from TYBScIT DevOps Demo!");
+
+to:
+app.MapGet("/", () =>
+    "Hello from TYBScIT - Continuous DevOps!");
+
+Then:
+git add .
+git commit -m "Updated application message"
+git push
+
+
+Refresh:
+http://localhost:8080
+
+*/
